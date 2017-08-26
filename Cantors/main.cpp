@@ -80,44 +80,41 @@ inline void ReadInputFile(FILE* inputFile) {
 	std::fgets(buffer, 1024, inputFile);
 	//Read the Softsussy input file path
 	std::fscanf(inputFile, "%s", &softsussyInputFilePath);
+	std::fgets(buffer, 1024, inputFile);
+	//Read the Softsussy output file path header
+	std::fgets(buffer, 1024, inputFile);
+	//Read the Softsussy output file path
+	std::fscanf(inputFile, "%s", &softSussyOutputFilePath);
+	std::fgets(buffer, 1024, inputFile);
+	//Read the Softsussy Executable file path header
+	std::fgets(buffer, 1024, inputFile);
+	//Read the Softsussy Executale file path
+	std::fscanf(inputFile, "%s", &softSussyExecutableFilePath);
 	delete[] buffer;
 }
 inline void WriteSoftSussyInputFile(FILE* softsussyInputFile,float m0,float m12,float a0,float tanb,float signmu) {
-	fprintf(softsussyInputFile, "# Example input in SLHA2 format, and suitable for input to SOFTSUSY3.3\n");
-	fprintf(softsussyInputFile, "# Has neutrino oscillation postdiction within 1 sigma error bars\n");
+	fprintf(softsussyInputFile, "# Example input in SLHA format, and suitable for input to\n");
+	fprintf(softsussyInputFile, "# SOFTSUSY (v1.8 or higher): CMSSM10.1.1 input - see arXiv:1109.3859\n");
 	fprintf(softsussyInputFile, "Block MODSEL		     # Select model\n");
 	fprintf(softsussyInputFile, "    1    1		     # sugra\n");
-	fprintf(softsussyInputFile, "    4    1                    # RPV\n");
 	fprintf(softsussyInputFile, "Block SMINPUTS		     # Standard Model inputs\n");
 	fprintf(softsussyInputFile, "    1	1.279340000e+02	     # alpha^(-1) SM MSbar(MZ)\n");
-	fprintf(softsussyInputFile, "    2    1.166370000e-05	     # G_Fermi\n");
-	fprintf(softsussyInputFile, "    3    1.172000000e-01	     # alpha_s(MZ) SM MSbar\n");
-	fprintf(softsussyInputFile, "    4    9.118760000e+01	     # MZ(pole)\n");
-	fprintf(softsussyInputFile, "    5	4.250000000e+00      # mb(mb) SM MSbar\n");
-	fprintf(softsussyInputFile, "    6    1.743000000e+02	     # mtop(pole)\n");
+	fprintf(softsussyInputFile, "    2   1.166370000e-05	     # G_Fermi\n");
+	fprintf(softsussyInputFile, "    3   1.172000000e-01	     # alpha_s(MZ) SM MSbar\n");
+	fprintf(softsussyInputFile, "    4   9.118760000e+01	     # MZ(pole)\n");
+	fprintf(softsussyInputFile, "    5	4.250000000e+00	     # mb(mb) SM MSbar\n");
+	fprintf(softsussyInputFile, "    6   1.743000000e+02	     # mtop(pole)\n");
 	fprintf(softsussyInputFile, "    7	1.777000000e+00	     # mtau(pole)\n");
-	fprintf(softsussyInputFile, "   11   5.109989020e-04	     # melectron(pole)\n");
-	fprintf(softsussyInputFile, "   13   1.056583570e-01      # mmuon(pole)\n");
-	fprintf(softsussyInputFile, "   21   4.750000000e-03	     # md(2 GeV)\n");
-	fprintf(softsussyInputFile, "   22   2.400000000e-03	     # mu(2 GeV)\n");
-	fprintf(softsussyInputFile, "   23   1.040000000e-01	     # ms(2 GeV)\n");
-	fprintf(softsussyInputFile, "   24   1.270000000e+00	     # mc(2 GeV)\n");
 	fprintf(softsussyInputFile, "Block MINPAR		     # Input parameters\n");
-	fprintf(softsussyInputFile, "    1      %.10e	     # m0\n", m0);
-	fprintf(softsussyInputFile, "    2      %.10e	     # m12\n", m12);
-	fprintf(softsussyInputFile, "    3      %.10e	     # tanb\n", tanb);
-	fprintf(softsussyInputFile, "    4      %d	     # sign(mu)\n", signmu);
-	fprintf(softsussyInputFile, "    5      %.10e	     # A0\n", a0);
-
-	fprintf(softsussyInputFile, "Block SOFTSUSY\n");
-	fprintf(softsussyInputFile, "    1   1.000000000e-03\n");
-	fprintf(softsussyInputFile, "    2   2.000000000e+00      # quark mixing: none (=0), up (=1) or down (=2)\n");
-	fprintf(softsussyInputFile, "    9   0.000000000e+00	    # Use normal hierarchy(=0.0) or inverted (=1.0)\n");
-	fprintf(softsussyInputFile, "Block VCKMIN		     # input parameters for CKM matrix\n");
-	fprintf(softsussyInputFile, "    1   2.272000000e-01      # lambda\n");
-	fprintf(softsussyInputFile, "    2   8.180000000e-01      # A\n");
-	fprintf(softsussyInputFile, "    3   2.210000000e-01      # rhobar\n");
-	fprintf(softsussyInputFile, "    4   3.400000000e-01      # etabar\n");
+	fprintf(softsussyInputFile, "    1   %f	     # m0\n",&m0);
+	fprintf(softsussyInputFile, "    2   %f	     # m12\n",&m12);
+	fprintf(softsussyInputFile, "    3   %f	     # tan beta at MZ, in DRbar scheme, Feynman gauge\n",&tanb);
+	fprintf(softsussyInputFile, "    4   %f	     # sign(mu)\n",signmu);
+	fprintf(softsussyInputFile, "	 5   %f	     # A0\n",&a0);
+	fprintf(softsussyInputFile, "Block SOFTSUSY               # Optional SOFTSUSY-specific parameters\n");
+	fprintf(softsussyInputFile, "    1   1.000000000e-03      # Numerical precision: suggested range 10^(-3...-6)\n");
+	fprintf(softsussyInputFile, "    2   0.000000000e+00	     # Quark mixing parameter: see manual\n");
+	fprintf(softsussyInputFile, "    5   1.000000000e+00      # Include 2-loop scalar mass squared/trilinear RGEs\n");
 }
 inline float ReadHigsValueFromSoftsussyOutputFile(FILE* softsussyOutputFile) {
 	std::string line;
