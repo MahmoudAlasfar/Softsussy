@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <map>
 
 #define TEMP_LOG_FILE "log.log"
@@ -8,6 +9,7 @@
 float m0St, m0Ed, m0Stp, m12St, m12E, m12Stp, a0St, a0Ed, a0Stp, tanbSt, tanbEd, tanbStp, higsValueToleranceRange = 0;
 int signMu;
 std::map<double,bool> higsValues;
+std::map<std::string, bool> isHeaderWritten;
 std::string softSussyExecutableFilePath,softSussyOutputFilePath, softsussyInputFilePath;
 FILE * pLogFile;
 inline void PauseConsole() { 	char a; 	std::cin >> a; }
@@ -118,7 +120,18 @@ inline void WriteSoftSussyInputFile(FILE* softsussyInputFile,float m0,float m12,
 	fprintf(softsussyInputFile, "    4   3.400000000e-01      # etabar\n");
 }
 inline float ReadHigsValueFromSoftsussyOutputFile(FILE* softsussyOutputFile) {
-
+	std::string line;
+	std::ifstream outputFileStream(softsussyOutputFile);
+	int n;
+	float higs;
+	std::string t;
+	while (std::getline(outputFileStream, line)) {
+		if (line.find("# h0")) {
+			sscanf(line.c_str(), "%d %f %s", &n, &higs, &t);
+			break;
+		}
+	}
+	return higs;
 }
 bool CheckHigsValues(double higsValue){
 	if (higsValues.empty()) {
@@ -165,6 +178,20 @@ int main() {
 						if (softsussyOutputFile != NULL) {
 							float higs = ReadHigsValueFromSoftsussyOutputFile(softsussyOutputFile);
 							if (CheckHigsValues(higs)) {
+								std::string fileName = "Higs" + std::to_string(higs) + ".higs";
+								FILE* higsFile = fopen(fileName.c_str(), "a");
+								if (higsFile != NULL) {
+									if (!isHeaderWritten[std::to_string(higs)]) {
+										fprintf(higsFile, "m0(c1) m12(c2) TanBeta(c3) signMU(c4) A0(c5) h0(c6)\n");
+										isHeaderWritten[std::to_string(higs)] = true;
+									}
+									fprintf(higsFile, "%f %f %f %d %f %f", &m0, &m12, &tanb, &signMu, &a0, &higs);
+									fclose(higsFile);
+								}
+								else {
+									WriteLog(("Failed to open an output file for higs value " + std::to_string(higs)).c_str());
+									return 0;
+								}
 							}
 						}
 						else {
