@@ -165,7 +165,6 @@ int main() {
 						if (softsussyOutputFile != NULL) {
 							float higs = ReadHigsValueFromSoftsussyOutputFile(softsussyOutputFile);
 							if (CheckHigsValues(higs)) {
-
 							}
 						}
 						else {
